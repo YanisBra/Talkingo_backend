@@ -2,15 +2,27 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
+use App\DataPersister\UserDataPersister;
 
-#[ApiResource]
+#[ApiResource(
+operations: [
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new Post(processor: UserDataPersister::class),
+        new Get(security: "object == user or is_granted('ROLE_ADMIN')"),
+        new Put(processor: UserDataPersister::class, security: "object == user or is_granted('ROLE_ADMIN')"),
+        new Patch(processor: UserDataPersister::class, security: "object == user or is_granted('ROLE_ADMIN')"),
+        new Delete(security: "object == user or is_granted('ROLE_ADMIN')")
+    ])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -145,6 +157,17 @@ class User
         $this->targetLanguage = $targetLanguage;
 
         return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+     public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     /**
