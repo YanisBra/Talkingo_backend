@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ApiResource]
@@ -24,8 +26,8 @@ class User
     #[ORM\Column(length: 50)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $role = null;
+    #[ORM\Column(type: 'json')]
+    private array $roles = [];
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -37,6 +39,19 @@ class User
     #[ORM\ManyToOne(inversedBy: 'usersUsingAsTarget')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Language $targetLanguage = null;
+
+    /**
+     * @var Collection<int, UserPhraseProgress>
+     */
+    #[ORM\OneToMany(targetEntity: UserPhraseProgress::class, mappedBy: 'user')]
+    private Collection $userPhraseProgress;
+
+    public function __construct()
+    {
+        $this->roles = ['ROLE_USER']; 
+        $this->createdAt = new \DateTimeImmutable();
+        $this->userPhraseProgress = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -79,14 +94,19 @@ class User
         return $this;
     }
 
-    public function getRole(): ?string
+    public function getRoles(): array
     {
-        return $this->role;
+        $roles = $this->roles;
+        if (!in_array('ROLE_USER', $roles, true)) {
+            $roles[] = 'ROLE_USER';
+        }
+
+        return array_unique($roles);
     }
 
-    public function setRole(string $role): static
+    public function setRoles(array $roles): static
     {
-        $this->role = $role;
+        $this->roles = $roles;
 
         return $this;
     }
@@ -123,6 +143,36 @@ class User
     public function setTargetLanguage(?Language $targetLanguage): static
     {
         $this->targetLanguage = $targetLanguage;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserPhraseProgress>
+     */
+    public function getUserPhraseProgress(): Collection
+    {
+        return $this->userPhraseProgress;
+    }
+
+    public function addUserPhraseProgress(UserPhraseProgress $userPhraseProgress): static
+    {
+        if (!$this->userPhraseProgress->contains($userPhraseProgress)) {
+            $this->userPhraseProgress->add($userPhraseProgress);
+            $userPhraseProgress->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserPhraseProgress(UserPhraseProgress $userPhraseProgress): static
+    {
+        if ($this->userPhraseProgress->removeElement($userPhraseProgress)) {
+            // set the owning side to null (unless already changed)
+            if ($userPhraseProgress->getUser() === $this) {
+                $userPhraseProgress->setUser(null);
+            }
+        }
 
         return $this;
     }

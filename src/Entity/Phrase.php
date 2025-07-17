@@ -36,6 +36,7 @@ class Phrase
     public function __construct()
     {
         $this->phraseTranslations = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int

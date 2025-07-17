@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\PhraseTranslationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -26,6 +28,17 @@ class PhraseTranslation
     #[ORM\ManyToOne(inversedBy: 'phraseTranslations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Language $language = null;
+
+    /**
+     * @var Collection<int, UserPhraseProgress>
+     */
+    #[ORM\OneToMany(targetEntity: UserPhraseProgress::class, mappedBy: 'phraseTranslation')]
+    private Collection $userPhraseProgress;
+
+    public function __construct()
+    {
+        $this->userPhraseProgress = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -64,6 +77,36 @@ class PhraseTranslation
     public function setLanguage(?Language $language): static
     {
         $this->language = $language;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserPhraseProgress>
+     */
+    public function getUserPhraseProgress(): Collection
+    {
+        return $this->userPhraseProgress;
+    }
+
+    public function addUserPhraseProgress(UserPhraseProgress $userPhraseProgress): static
+    {
+        if (!$this->userPhraseProgress->contains($userPhraseProgress)) {
+            $this->userPhraseProgress->add($userPhraseProgress);
+            $userPhraseProgress->setPhraseTranslation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserPhraseProgress(UserPhraseProgress $userPhraseProgress): static
+    {
+        if ($this->userPhraseProgress->removeElement($userPhraseProgress)) {
+            // set the owning side to null (unless already changed)
+            if ($userPhraseProgress->getPhraseTranslation() === $this) {
+                $userPhraseProgress->setPhraseTranslation(null);
+            }
+        }
 
         return $this;
     }
