@@ -13,14 +13,15 @@ use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
 use App\DataPersister\UserDataPersister;
 
 #[ApiResource(
-operations: [
+    operations: [
         new GetCollection(security: "is_granted('ROLE_ADMIN')"),
         new Post(processor: UserDataPersister::class),
         new Get(security: "object == user or is_granted('ROLE_ADMIN')"),
         new Put(processor: UserDataPersister::class, security: "object == user or is_granted('ROLE_ADMIN')"),
         new Patch(processor: UserDataPersister::class, security: "object == user or is_granted('ROLE_ADMIN')"),
         new Delete(security: "object == user or is_granted('ROLE_ADMIN')")
-    ])]
+    ]
+)]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {

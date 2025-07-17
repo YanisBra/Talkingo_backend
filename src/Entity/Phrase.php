@@ -7,8 +7,19 @@ use App\Repository\PhraseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
 
-#[ApiResource]
+
+#[ApiResource(
+    operations: [
+        new Get(security: "is_granted('ROLE_ADMIN')"),
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Put(security: "is_granted('ROLE_ADMIN')"),
+        new Patch(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')")
+    ]
+)]
 #[ORM\Entity(repositoryClass: PhraseRepository::class)]
 class Phrase
 {

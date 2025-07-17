@@ -25,3 +25,10 @@ services:
             $passwordHasher: '@security.user_password_hasher'
         tags: 
             - { name: 'api_platform.state_processor', args: [App\Entity\User] }
+
+    App\DataPersister\UserPhraseProgressDataPersister:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+            $security: '@security.helper'
+        tags:
+            - { name: 'api_platform.state_processor', args: [App\Entity\UserPhraseProgress] }

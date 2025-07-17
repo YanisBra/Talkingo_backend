@@ -3,10 +3,20 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
 use App\Repository\ThemeTranslationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(security: "is_granted('ROLE_ADMIN')"),
+        new Put(security: "is_granted('ROLE_ADMIN')"),
+        new Patch(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(security: "is_granted('ROLE_ADMIN')")
+    ]
+)]
 #[ORM\Entity(repositoryClass: ThemeTranslationRepository::class)]
 class ThemeTranslation
 {

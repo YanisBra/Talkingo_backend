@@ -5,8 +5,19 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserPhraseProgressRepository;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
+use App\DataPersister\UserPhraseProgressDataPersister;
 
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(), 
+        new Get(),
+        new Post(processor: UserPhraseProgressDataPersister::class, security: "is_granted('ROLE_USER')"),
+        new Put(processor: UserPhraseProgressDataPersister::class, security: "is_granted('ROLE_USER')"),
+        new Patch(processor: UserPhraseProgressDataPersister::class, security: "is_granted('ROLE_USER')"),
+        new Delete(security: "is_granted('ROLE_USER')")
+    ]
+)]
 #[ORM\Entity(repositoryClass: UserPhraseProgressRepository::class)]
 class UserPhraseProgress
 {
@@ -22,9 +33,6 @@ class UserPhraseProgress
     #[ORM\ManyToOne(inversedBy: 'userPhraseProgress')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
-
-    #[ORM\Column]
-    private ?bool $isKnown = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -59,18 +67,6 @@ class UserPhraseProgress
     public function setUser(?User $user): static
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    public function isKnown(): ?bool
-    {
-        return $this->isKnown;
-    }
-
-    public function setIsKnown(bool $isKnown): static
-    {
-        $this->isKnown = $isKnown;
 
         return $this;
     }
