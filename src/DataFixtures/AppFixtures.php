@@ -8,7 +8,7 @@ use App\Entity\Theme;
 use App\Entity\ThemeTranslation;
 use App\Entity\Phrase;
 use App\Entity\PhraseTranslation;
-use UserPhraseProgress;
+use App\Entity\UserPhraseProgress;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -109,42 +109,42 @@ class AppFixtures extends Fixture
         $manager->persist($phrase4);
 
         $phrase_translation1 = new PhraseTranslation();
-        $phrase_translation1->setLabel('Bonjour')
+        $phrase_translation1->setText('Bonjour')
                             ->setPhrase($phrase1)
                             ->setLanguage($language1);
 
         $phrase_translation2 = new PhraseTranslation();
-        $phrase_translation2->setLabel('Hello')
+        $phrase_translation2->setText('Hello')
                             ->setPhrase($phrase1)
                             ->setLanguage($language2);
 
         $phrase_translation3 = new PhraseTranslation();
-        $phrase_translation3->setLabel('Au revoir')
+        $phrase_translation3->setText('Au revoir')
                             ->setPhrase($phrase2)
                             ->setLanguage($language1);
 
         $phrase_translation4 = new PhraseTranslation();
-        $phrase_translation4->setLabel('Goodbye')
+        $phrase_translation4->setText('Goodbye')
                             ->setPhrase($phrase2)
                             ->setLanguage($language2);
 
         $phrase_translation5 = new PhraseTranslation();
-        $phrase_translation5->setLabel('Merci')
+        $phrase_translation5->setText('Merci')
                             ->setPhrase($phrase3)
                             ->setLanguage($language1);
 
         $phrase_translation6 = new PhraseTranslation();
-        $phrase_translation6->setLabel('Thank you')
+        $phrase_translation6->setText('Thank you')
                             ->setPhrase($phrase3)
                             ->setLanguage($language2);
 
         $phrase_translation7 = new PhraseTranslation();
-        $phrase_translation7->setLabel('S’il vous plaît')
+        $phrase_translation7->setText('S’il vous plaît')
                             ->setPhrase($phrase4)
                             ->setLanguage($language1);
 
         $phrase_translation8 = new PhraseTranslation();
-        $phrase_translation8->setLabel('Please')
+        $phrase_translation8->setText('Please')
                             ->setPhrase($phrase4)
                             ->setLanguage($language2);
 
