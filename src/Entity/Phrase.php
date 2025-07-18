@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ApiResource(
@@ -28,13 +29,20 @@ class Phrase
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank(message: "The phrase code cannot be blank.")]
+    #[Assert\Length(
+        max: 150,
+        maxMessage: "The phrase code cannot be longer than {{ limit }} characters."
+    )]
     #[ORM\Column(length: 150)]
     private ?string $code = null;
 
+    #[Assert\NotNull(message: "A theme must be associated with the phrase.")]
     #[ORM\ManyToOne(inversedBy: 'phrases')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Theme $theme = null;
 
+    #[Assert\NotNull(message: "The creation date must be provided.")]
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 

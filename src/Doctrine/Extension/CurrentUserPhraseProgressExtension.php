@@ -13,7 +13,7 @@ use App\Entity\UserPhraseProgress;
  * This extension automatically filters UserPhraseProgress resources
  * to ensure that users only access their own progress records.
  */
-class CurrentUserUserPhraseProgressExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
+class CurrentUserPhraseProgressExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
     public function __construct(private Security $security)
     {
@@ -29,7 +29,7 @@ class CurrentUserUserPhraseProgressExtension implements QueryCollectionExtension
             return;
         }
 
-        // Get the currently authenticated user
+        // Get the currently authenticated user and Admins can access everything
         $user = $this->security->getUser();
         if (!$user || in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return;

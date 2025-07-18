@@ -7,6 +7,7 @@ use App\Repository\UserPhraseProgressRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
 use App\DataPersister\UserPhraseProgressDataPersister;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     operations: [
@@ -16,7 +17,9 @@ use App\DataPersister\UserPhraseProgressDataPersister;
         new Put(processor: UserPhraseProgressDataPersister::class, security: "is_granted('ROLE_USER')"),
         new Patch(processor: UserPhraseProgressDataPersister::class, security: "is_granted('ROLE_USER')"),
         new Delete(security: "is_granted('ROLE_USER')")
-    ]
+    ],
+    normalizationContext: ['groups' => ['user_phrase_progress:read']],
+    denormalizationContext: ['groups' => ['user_phrase_progress:write']]
 )]
 #[ORM\Entity(repositoryClass: UserPhraseProgressRepository::class)]
 class UserPhraseProgress
@@ -24,17 +27,21 @@ class UserPhraseProgress
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user_phrase_progress:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'userPhraseProgress')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['user_phrase_progress:read', 'user_phrase_progress:write'])]
     private ?PhraseTranslation $phraseTranslation = null;
 
     #[ORM\ManyToOne(inversedBy: 'userPhraseProgress')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['user_phrase_progress:read', 'user_phrase_progress:write'])]
     private ?User $user = null;
 
     #[ORM\Column]
+    #[Groups(['user_phrase_progress:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     public function __construct()
@@ -83,4 +90,3 @@ class UserPhraseProgress
         return $this;
     }
 }
-

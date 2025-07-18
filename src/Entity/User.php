@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +15,8 @@ use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
 use App\DataPersister\UserDataPersister;
 
 #[ApiResource(
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']],
     operations: [
         new GetCollection(security: "is_granted('ROLE_ADMIN')"),
         new Post(processor: UserDataPersister::class),
@@ -28,29 +32,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
+    #[Assert\NotBlank(message: "Email is required.")]
+    #[Assert\Email(message: "The email '{{ value }}' is not valid.")]
     #[ORM\Column(length: 50)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
+    #[Assert\NotBlank(message: "Password is required.")]
+    #[Assert\Length(
+        min: 12,
+        max: 255,
+        minMessage: "Password must be at least {{ limit }} characters long.",
+        maxMessage: "Password cannot be longer than {{ limit }} characters."
+    )]
     #[ORM\Column(length: 255)]
+    #[Groups(['user:write'])]
     private ?string $password = null;
 
+    #[Assert\NotBlank(message: "Name is required.")]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: "Name must be at least {{ limit }} characters long.",
+        maxMessage: "Name cannot be longer than {{ limit }} characters."
+    )]
     #[ORM\Column(length: 50)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $name = null;
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[Assert\NotNull(message: "Interface language is required.")]
     #[ORM\ManyToOne(inversedBy: 'usersUsingAsInterface')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['user:read', 'user:write'])]
     private ?Language $interfaceLanguage = null;
 
+    #[Assert\NotNull(message: "Target language is required.")]
     #[ORM\ManyToOne(inversedBy: 'usersUsingAsTarget')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['user:read', 'user:write'])]
     private ?Language $targetLanguage = null;
 
     /**

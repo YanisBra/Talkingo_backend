@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 
 #[ApiResource(
@@ -29,18 +31,38 @@ class Language
     private ?int $id = null;
 
     #[ORM\Column(length: 10, unique: true)]
+    #[Assert\NotBlank(message: "The language code is required.")]
+    #[Assert\Length(
+        max: 10,
+        maxMessage: "The code must not exceed {{ limit }} characters."
+    )]
+    #[Groups(['language:read', 'language:write'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: "The language label is required.")]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: "The label must not exceed {{ limit }} characters."
+    )]
+    #[Groups(['language:read', 'language:write'])]
     private ?string $label = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: "The isActive field is required.")]
+    #[Groups(['language:read', 'language:write'])]
     private ?bool $isActive = null;
 
     #[ORM\Column(length: 500, nullable: true)]
+    #[Assert\Length(
+        max: 500,
+        maxMessage: "The icon URL must not exceed {{ limit }} characters."
+    )]
+    #[Groups(['language:read', 'language:write'])]
     private ?string $iconUrl = null;
 
     #[ORM\Column]
+    #[Groups(['language:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     /**

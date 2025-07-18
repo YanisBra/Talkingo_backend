@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
@@ -9,6 +10,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 
 #[ApiResource(
@@ -30,6 +33,13 @@ class PhraseTranslation
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: "The phrase translation cannot be empty.")]
+    #[Assert\Length(
+        min: 2,
+        max: 500,
+        minMessage: "The phrase translation must be at least {{ limit }} characters long.",
+        maxMessage: "The phrase translation cannot be longer than {{ limit }} characters."
+    )]
     private ?string $text = null;
 
     #[ORM\ManyToOne(inversedBy: 'phraseTranslations')]

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
 use App\Repository\ThemeTranslationRepository;
@@ -26,6 +28,11 @@ class ThemeTranslation
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: "Label is required.")]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: "Label cannot be longer than {{ limit }} characters."
+    )]
     private ?string $label = null;
 
     #[ORM\ManyToOne(inversedBy: 'themeTranslations')]

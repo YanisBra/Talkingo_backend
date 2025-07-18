@@ -8,27 +8,30 @@ parameters:
 services:
     # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
+        autowire: true # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
-        resource: '../src/'
+        resource: "../src/"
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
     App\DataPersister\UserDataPersister:
         arguments:
-            $entityManager: '@doctrine.orm.entity_manager'
-            $passwordHasher: '@security.user_password_hasher'
-        tags: 
-            - { name: 'api_platform.state_processor', args: [App\Entity\User] }
+            $entityManager: "@doctrine.orm.entity_manager"
+            $passwordHasher: "@security.user_password_hasher"
+        tags:
+            - { name: "api_platform.state_processor", args: [App\Entity\User] }
 
     App\DataPersister\UserPhraseProgressDataPersister:
         arguments:
-            $em: '@doctrine.orm.entity_manager'
-            $security: '@security.helper'
+            $em: "@doctrine.orm.entity_manager"
+            $security: "@security.helper"
         tags:
-            - { name: 'api_platform.state_processor', args: [App\Entity\UserPhraseProgress] }
+            - {
+                  name: "api_platform.state_processor",
+                  args: [App\Entity\UserPhraseProgress],
+              }

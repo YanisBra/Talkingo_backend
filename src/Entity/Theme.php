@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ThemeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -28,6 +29,11 @@ class Theme
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: "The code cannot be blank.")]
+    #[Assert\Length(
+        max: 50,
+        maxMessage: "The code must not exceed {{ limit }} characters."
+    )]
     private ?string $code = null;
 
     #[ORM\Column]
