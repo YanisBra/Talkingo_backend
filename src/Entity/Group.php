@@ -12,6 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\DataPersister\GroupDataPersister;
 use App\Controller\GroupLeaveController;
+use App\Controller\GroupThemesProgressController;
+
 
 
 
@@ -32,6 +34,15 @@ use App\Controller\GroupLeaveController;
             controller: GroupLeaveController::class,
             name: 'group_leave',
             security: "is_granted('ROLE_USER')"
+        ),
+        new Get(
+            uriTemplate: '/groups/{id}/themes/progress',
+            controller: GroupThemesProgressController::class,
+            name: 'group_theme_progress',
+            read: false,
+            deserialize: false,
+            security: "is_granted('ROLE_USER')",
+            normalizationContext: ['groups' => ['group_theme_progress:read']]
         )
     ]
 )]
