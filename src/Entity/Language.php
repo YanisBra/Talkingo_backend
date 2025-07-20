@@ -83,6 +83,12 @@ class Language
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'targetLanguage')]
     private Collection $usersUsingAsTarget;
 
+    /**
+     * @var Collection<int, Group>
+     */
+    #[ORM\OneToMany(targetEntity: Group::class, mappedBy: 'targetLanguage')]
+    private Collection $groups;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -90,6 +96,7 @@ class Language
         $this->themeTranslations = new ArrayCollection();
         $this->usersUsingAsInterface = new ArrayCollection();
         $this->usersUsingAsTarget = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -238,6 +245,35 @@ class Language
         if ($this->usersUsingAsTarget->removeElement($user)) {
             if ($user->getTargetLanguage() === $this) {
                 $user->setTargetLanguage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Group>
+     */
+    public function getGroups(): Collection
+    {
+        return $this->groups;
+    }
+
+    public function addGroup(Group $group): static
+    {
+        if (!$this->groups->contains($group)) {
+            $this->groups->add($group);
+            $group->setTargetLanguage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroup(Group $group): static
+    {
+        if ($this->groups->removeElement($group)) {
+            if ($group->getTargetLanguage() === $this) {
+                $group->setTargetLanguage(null);
             }
         }
 

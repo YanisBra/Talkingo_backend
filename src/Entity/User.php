@@ -88,11 +88,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: UserPhraseProgress::class, mappedBy: 'user')]
     private Collection $userPhraseProgress;
 
+    /**
+     * @var Collection<int, Group>
+     */
+    #[ORM\OneToMany(targetEntity: Group::class, mappedBy: 'createdBy')]
+    private Collection $groups;
+
+    /**
+     * @var Collection<int, GroupMembership>
+     */
+    #[ORM\OneToMany(targetEntity: GroupMembership::class, mappedBy: 'user')]
+    private Collection $groupMemberships;
+
     public function __construct()
     {
         $this->roles = ['ROLE_USER']; 
         $this->createdAt = new \DateTimeImmutable();
         $this->userPhraseProgress = new ArrayCollection();
+        $this->groups = new ArrayCollection();
+        $this->groupMemberships = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -224,6 +238,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($userPhraseProgress->getUser() === $this) {
                 $userPhraseProgress->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Group>
+     */
+    public function getGroups(): Collection
+    {
+        return $this->groups;
+    }
+
+    public function addGroup(Group $group): static
+    {
+        if (!$this->groups->contains($group)) {
+            $this->groups->add($group);
+            $group->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroup(Group $group): static
+    {
+        if ($this->groups->removeElement($group)) {
+            // set the owning side to null (unless already changed)
+            if ($group->getCreatedBy() === $this) {
+                $group->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupMembership>
+     */
+    public function getGroupMemberships(): Collection
+    {
+        return $this->groupMemberships;
+    }
+
+    public function addGroupMembership(GroupMembership $groupMembership): static
+    {
+        if (!$this->groupMemberships->contains($groupMembership)) {
+            $this->groupMemberships->add($groupMembership);
+            $groupMembership->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupMembership(GroupMembership $groupMembership): static
+    {
+        if ($this->groupMemberships->removeElement($groupMembership)) {
+            // set the owning side to null (unless already changed)
+            if ($groupMembership->getUser() === $this) {
+                $groupMembership->setUser(null);
             }
         }
 

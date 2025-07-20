@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\UserPhraseProgressRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
@@ -30,16 +31,19 @@ class UserPhraseProgress
     #[Groups(['user_phrase_progress:read'])]
     private ?int $id = null;
 
+    #[Assert\NotNull(message: "The phraseTranslation is required.")]
     #[ORM\ManyToOne(inversedBy: 'userPhraseProgress')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['user_phrase_progress:read', 'user_phrase_progress:write'])]
     private ?PhraseTranslation $phraseTranslation = null;
 
+    #[Assert\NotNull(message: "The user is required.")]
     #[ORM\ManyToOne(inversedBy: 'userPhraseProgress')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['user_phrase_progress:read', 'user_phrase_progress:write'])]
     private ?User $user = null;
 
+    #[Assert\NotNull(message: "The createdAt date is required.")]
     #[ORM\Column]
     #[Groups(['user_phrase_progress:read'])]
     private ?\DateTimeImmutable $createdAt = null;

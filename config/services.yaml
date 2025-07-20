@@ -32,6 +32,18 @@ services:
             $security: "@security.helper"
         tags:
             - {
-                  name: "api_platform.state_processor",
-                  args: [App\Entity\UserPhraseProgress],
+                  name: "api_platform.state_processor", args: [App\Entity\UserPhraseProgress],
               }
+
+    App\DataPersister\GroupDataPersister:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+            $security: '@security.helper'
+        tags:
+            - { name: 'api_platform.state_processor', args: [App\Entity\Group] }
+
+    App\Controller\GroupJoinController:
+        tags: ['controller.service_arguments']
+
+    App\Controller\GroupLeaveController:
+        tags: ['controller.service_arguments']
