@@ -13,6 +13,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use App\DataPersister\GroupDataPersister;
 use App\Controller\GroupLeaveController;
 use App\Controller\GroupThemesProgressController;
+use App\Controller\GroupThemeMembersProgressController;
+
+
 
 
 
@@ -43,6 +46,14 @@ use App\Controller\GroupThemesProgressController;
             deserialize: false,
             security: "is_granted('ROLE_USER')",
             normalizationContext: ['groups' => ['group_theme_progress:read']]
+        ),
+        new Get(
+            uriTemplate: '/groups/{groupId}/themes/{themeId}/members/progress',
+            controller: GroupThemeMembersProgressController::class,
+            name: 'group_theme_members_progress',
+            read: false,
+            deserialize: false,
+            security: "is_granted('ROLE_USER')"
         )
     ]
 )]

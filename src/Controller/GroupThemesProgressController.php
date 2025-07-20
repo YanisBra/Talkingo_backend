@@ -77,17 +77,22 @@ class GroupThemesProgressController
 
         $themeLabels = $conn->executeQuery(
             "
-            SELECT tt.theme_id, tt.label
+            SELECT tt.theme_id, tt.label, tt.language_id
             FROM theme_translation tt
-            WHERE tt.language_id = :languageId
+            WHERE tt.language_id IN (:interfaceLang, :targetLang)
             ",
-            ['languageId' => $interfaceLanguageId],
-            ['languageId' => \PDO::PARAM_INT]
+            ['interfaceLang' => $interfaceLanguageId, 'targetLang' => $targetLanguageId],
+            ['interfaceLang' => \PDO::PARAM_INT, 'targetLang' => \PDO::PARAM_INT]
         )->fetchAllAssociative();
 
-        $themeLabelMap = [];
+        $themeLabelsByInterface = [];
+        $themeLabelsByTarget = [];
         foreach ($themeLabels as $labelRow) {
-            $themeLabelMap[$labelRow['theme_id']] = $labelRow['label'];
+            if ((int)$labelRow['language_id'] === $interfaceLanguageId) {
+                $themeLabelsByInterface[$labelRow['theme_id']] = $labelRow['label'];
+            } elseif ((int)$labelRow['language_id'] === $targetLanguageId) {
+                $themeLabelsByTarget[$labelRow['theme_id']] = $labelRow['label'];
+            }
         }
 
         // Calculate average per theme
@@ -106,7 +111,8 @@ class GroupThemesProgressController
             $result[] = [
                 'theme' => [
                     'id' => (int)$themeId,
-                    'label' => $themeLabelMap[$themeId] ?? null,
+                    'label_interface' => $themeLabelsByInterface[$themeId] ?? null,
+                    'label_target' => $themeLabelsByTarget[$themeId] ?? null,
                 ],
                 'averageProgress' => $average
             ];

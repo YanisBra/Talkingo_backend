@@ -50,3 +50,8 @@ services:
 
     App\Controller\GroupThemesProgressController:
         tags: ['controller.service_arguments']
+
+    App\Controller\GroupThemeMembersProgressController:
+        tags: ['controller.service_arguments']
+
+        

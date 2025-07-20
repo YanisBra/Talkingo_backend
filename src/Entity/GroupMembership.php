@@ -38,11 +38,11 @@ class GroupMembership
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'groupMemberships')]
-    #[Groups(['group_membership:read'])]
+    #[Groups(['group_membership:read', 'group_membership:write'])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'groupMemberships')]
-    #[Groups(['group_membership:read'])]
+    #[Groups(['group_membership:read', 'group_membership:write'])]
     private ?Group $targetGroup = null;
 
     #[ORM\Column]
