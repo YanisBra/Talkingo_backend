@@ -52,6 +52,9 @@ services:
     App\Controller\UserMeController:
         tags: ['controller.service_arguments']
 
+    App\Controller\UserThemeProgressController:
+        tags: ['controller.service_arguments']
+
     App\Controller\GroupJoinController:
         tags: ['controller.service_arguments']
 
