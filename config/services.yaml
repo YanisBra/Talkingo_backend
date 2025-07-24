@@ -55,6 +55,9 @@ services:
     App\Controller\UserThemeProgressController:
         tags: ['controller.service_arguments']
 
+    App\Controller\ThemePhraseTranslationsController:
+        tags: ['controller.service_arguments']
+
     App\Controller\GroupJoinController:
         tags: ['controller.service_arguments']
 
