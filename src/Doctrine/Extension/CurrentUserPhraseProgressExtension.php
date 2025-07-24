@@ -9,19 +9,14 @@ use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Entity\UserPhraseProgress;
 
-/**
- * This extension automatically filters UserPhraseProgress resources
- * to ensure that users only access their own progress records.
- */
+
 class CurrentUserPhraseProgressExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
     public function __construct(private Security $security)
     {
     }
 
-    /**
-     * Adds a condition to restrict access to only the authenticated user's records.
-     */
+     // Adds a condition to restrict access to only the authenticated user's records.
     private function addWhere(QueryBuilder $queryBuilder, string $resourceClass): void
     {
         // Only apply this filter for UserPhraseProgress entities
@@ -42,17 +37,14 @@ class CurrentUserPhraseProgressExtension implements QueryCollectionExtensionInte
             ->setParameter('current_user', $user);
     }
 
-    /**
-     * Applies the filter to collection endpoints ( GET /api/user_phrase_progresses)
-     */
+    //Applies the filter to collection endpoints ( GET /api/user_phrase_progresses)
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?\ApiPlatform\Metadata\Operation $operation = null, array $context = []): void
     {
         $this->addWhere($queryBuilder, $resourceClass);
     }
 
-    /**
-     * Applies the filter to item endpoints ( GET /api/user_phrase_progresses/{id})
-     */
+
+    // Applies the filter to item endpoints ( GET /api/user_phrase_progresses/{id})
     public function applyToItem(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $uriVariables = [], ?\ApiPlatform\Metadata\Operation $operation = null, array $context = []): void
     {
         $this->addWhere($queryBuilder, $resourceClass);

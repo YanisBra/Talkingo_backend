@@ -95,14 +95,16 @@ class GroupThemesProgressController
             }
         }
 
-        // Calculate average per theme
+        // Calculate average per theme, including themes with 0 learned
         $result = [];
-        foreach ($known as $row) {
-            $themeId = $row['theme_id'];
-            $knownCount = (int)$row['known_count'];
+        $allThemeIds = array_unique(array_merge(array_keys($totalByTheme), array_keys($themeLabelsByInterface), array_keys($themeLabelsByTarget)));
+
+        foreach ($allThemeIds as $themeId) {
+            $knownRow = array_filter($known, fn($row) => $row['theme_id'] == $themeId);
+            $knownCount = count($knownRow) > 0 ? (int)array_values($knownRow)[0]['known_count'] : 0;
             $totalPhrases = $totalByTheme[$themeId] ?? 0;
 
-            if ($totalPhrases > 0) {
+            if ($totalPhrases > 0 && count($members) > 0) {
                 $average = round(($knownCount / ($totalPhrases * count($members))) * 100);
             } else {
                 $average = 0;
@@ -118,6 +120,13 @@ class GroupThemesProgressController
             ];
         }
 
-        return new JsonResponse($result);
+        $totalAverageProgress = count($result) > 0
+            ? round(array_sum(array_column($result, 'averageProgress')) / count($result))
+            : 0;
+
+        return new JsonResponse([
+            'themes' => $result,
+            'totalAverageProgress' => $totalAverageProgress
+        ]);
     }
 }
