@@ -9,9 +9,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 
 #[ApiResource(
+    normalizationContext: ['groups' => ['phrase:read']],
     operations: [
         new Get(security: "is_granted('ROLE_ADMIN')"),
         new GetCollection(security: "is_granted('ROLE_ADMIN')"),
@@ -27,6 +29,7 @@ class Phrase
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['phrase:read', 'phrase_translation:read'])]
     private ?int $id = null;
 
     #[Assert\NotBlank(message: "The phrase code cannot be blank.")]
@@ -35,11 +38,13 @@ class Phrase
         maxMessage: "The phrase code cannot be longer than {{ limit }} characters."
     )]
     #[ORM\Column(length: 150)]
+    #[Groups(['phrase:read', 'phrase_translation:read'])]
     private ?string $code = null;
 
     #[Assert\NotNull(message: "A theme must be associated with the phrase.")]
     #[ORM\ManyToOne(inversedBy: 'phrases')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['phrase:read'])]
     private ?Theme $theme = null;
 
     #[Assert\NotNull(message: "The creation date must be provided.")]

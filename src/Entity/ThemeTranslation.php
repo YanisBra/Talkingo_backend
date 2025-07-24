@@ -8,8 +8,14 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
 use App\Repository\ThemeTranslationRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 
+
+#[ApiFilter(SearchFilter::class, properties: ['theme' => 'exact'])]
 #[ApiResource(
+    normalizationContext: ['groups' => ['theme_translation:read']],
     operations: [
         new Get(),
         new GetCollection(),
@@ -25,7 +31,9 @@ class ThemeTranslation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['theme_translation:read'])]
     private ?int $id = null;
+    
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: "Label is required.")]
@@ -33,14 +41,17 @@ class ThemeTranslation
         max: 100,
         maxMessage: "Label cannot be longer than {{ limit }} characters."
     )]
+    #[Groups(['theme_translation:read'])]
     private ?string $label = null;
 
     #[ORM\ManyToOne(inversedBy: 'themeTranslations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['theme_translation:read'])]
     private ?Theme $theme = null;
 
     #[ORM\ManyToOne(inversedBy: 'themeTranslations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['theme_translation:read'])]
     private ?Language $language = null;
 
     public function getId(): ?int

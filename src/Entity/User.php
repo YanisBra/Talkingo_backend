@@ -13,6 +13,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
 use App\DataPersister\UserDataPersister;
+use App\Controller\UserMeController;
+
 
 #[ApiResource(
     normalizationContext: ['groups' => ['user:read']],
@@ -23,7 +25,7 @@ use App\DataPersister\UserDataPersister;
         new Get(security: "object == user or is_granted('ROLE_ADMIN')"),
         new Put(processor: UserDataPersister::class, security: "object == user or is_granted('ROLE_ADMIN')"),
         new Patch(processor: UserDataPersister::class, security: "object == user or is_granted('ROLE_ADMIN')"),
-        new Delete(security: "object == user or is_granted('ROLE_ADMIN')")
+        new Delete(security: "object == user or is_granted('ROLE_ADMIN')"),
     ]
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -41,16 +43,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
-    #[Assert\NotBlank(message: "Password is required.")]
+    #[ORM\Column(length: 255)]
+    private ?string $password = null;
+
     #[Assert\Length(
         min: 12,
         max: 255,
         minMessage: "Password must be at least {{ limit }} characters long.",
         maxMessage: "Password cannot be longer than {{ limit }} characters."
     )]
-    #[ORM\Column(length: 255)]
     #[Groups(['user:write'])]
-    private ?string $password = null;
+    private ?string $plainPassword = null;
 
     #[Assert\NotBlank(message: "Name is required.")]
     #[Assert\Length(
@@ -64,6 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $name = null;
 
     #[ORM\Column(type: 'json')]
+    #[Groups(['user:read', 'user:write'])]
     private array $roles = [];
 
     #[ORM\Column]
@@ -100,6 +104,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: GroupMembership::class, mappedBy: 'user')]
     private Collection $groupMemberships;
 
+    /**
+     * @var Collection<int, QuizResult>
+     */
+    #[ORM\OneToMany(targetEntity: QuizResult::class, mappedBy: 'user')]
+    private Collection $quizResults;
+
     public function __construct()
     {
         $this->roles = ['ROLE_USER']; 
@@ -107,6 +117,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->userPhraseProgress = new ArrayCollection();
         $this->groups = new ArrayCollection();
         $this->groupMemberships = new ArrayCollection();
+        $this->quizResults = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -134,6 +145,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): static
+    {
+        $this->plainPassword = $plainPassword;
 
         return $this;
     }
@@ -298,6 +321,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($groupMembership->getUser() === $this) {
                 $groupMembership->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, QuizResult>
+     */
+    public function getQuizResults(): Collection
+    {
+        return $this->quizResults;
+    }
+
+    public function addQuizResult(QuizResult $quizResult): static
+    {
+        if (!$this->quizResults->contains($quizResult)) {
+            $this->quizResults->add($quizResult);
+            $quizResult->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuizResult(QuizResult $quizResult): static
+    {
+        if ($this->quizResults->removeElement($quizResult)) {
+            // set the owning side to null (unless already changed)
+            if ($quizResult->getUser() === $this) {
+                $quizResult->setUser(null);
             }
         }
 

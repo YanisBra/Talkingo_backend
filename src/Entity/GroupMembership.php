@@ -15,7 +15,6 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 
 
-
 #[ORM\Entity(repositoryClass: GroupMembershipRepository::class)]
 #[ApiFilter(SearchFilter::class, properties: ['targetGroup' => 'exact'])]
 #[ApiResource(

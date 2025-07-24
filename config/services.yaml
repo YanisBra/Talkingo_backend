@@ -42,6 +42,16 @@ services:
         tags:
             - { name: 'api_platform.state_processor', args: [App\Entity\Group] }
 
+    App\DataPersister\QuizResultDataPersister:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+            $security: '@security.helper'
+        tags:
+            - { name: 'api_platform.state_processor', args: [App\Entity\QuizResult] }
+
+    App\Controller\UserMeController:
+        tags: ['controller.service_arguments']
+
     App\Controller\GroupJoinController:
         tags: ['controller.service_arguments']
 
@@ -53,5 +63,6 @@ services:
 
     App\Controller\GroupThemeMembersProgressController:
         tags: ['controller.service_arguments']
+
 
         

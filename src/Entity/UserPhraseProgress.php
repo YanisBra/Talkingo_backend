@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
 use App\DataPersister\UserPhraseProgressDataPersister;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+
 #[ApiResource(
     operations: [
         new GetCollection(), 

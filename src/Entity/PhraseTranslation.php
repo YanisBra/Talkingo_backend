@@ -11,10 +11,14 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 
 
-
+#[ApiFilter(SearchFilter::class, properties: ['phrase' => 'exact', 'phrase.theme' => 'exact'])]
 #[ApiResource(
+    normalizationContext: ['groups' => ['phrase_translation:read']],
     operations: [
         new Get(),
         new GetCollection(),
@@ -30,6 +34,7 @@ class PhraseTranslation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['phrase_translation:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -40,14 +45,17 @@ class PhraseTranslation
         minMessage: "The phrase translation must be at least {{ limit }} characters long.",
         maxMessage: "The phrase translation cannot be longer than {{ limit }} characters."
     )]
+    #[Groups(['phrase_translation:read'])]
     private ?string $text = null;
 
     #[ORM\ManyToOne(inversedBy: 'phraseTranslations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['phrase_translation:read'])]
     private ?Phrase $phrase = null;
 
     #[ORM\ManyToOne(inversedBy: 'phraseTranslations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['phrase_translation:read'])]
     private ?Language $language = null;
 
     /**

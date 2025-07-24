@@ -13,6 +13,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 
 #[ApiResource(
+    normalizationContext: ['groups' => ['language:read']],
+    denormalizationContext: ['groups' => ['language:write']],
     operations: [
         new Get(),
         new GetCollection(),
@@ -28,6 +30,7 @@ class Language
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['language:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 10, unique: true)]
@@ -45,7 +48,7 @@ class Language
         max: 100,
         maxMessage: "The label must not exceed {{ limit }} characters."
     )]
-    #[Groups(['language:read', 'language:write'])]
+    #[Groups(['language:read', 'language:write', 'theme_translation:read', 'phrase_translation:read', 'group:read', 'user:read'])]
     private ?string $label = null;
 
     #[ORM\Column]
@@ -72,6 +75,12 @@ class Language
     private Collection $themeTranslations;
 
     /**
+     * @var Collection<int, PhraseTranslation>
+     */
+    #[ORM\OneToMany(mappedBy: 'language', targetEntity: PhraseTranslation::class)]
+    private Collection $phraseTranslations;
+
+    /**
      * @var Collection<int, User>
      */
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'interfaceLanguage')]
@@ -89,6 +98,12 @@ class Language
     #[ORM\OneToMany(targetEntity: Group::class, mappedBy: 'targetLanguage')]
     private Collection $groups;
 
+    /**
+     * @var Collection<int, QuizResult>
+     */
+    #[ORM\OneToMany(targetEntity: QuizResult::class, mappedBy: 'language')]
+    private Collection $quizResults;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -97,6 +112,7 @@ class Language
         $this->usersUsingAsInterface = new ArrayCollection();
         $this->usersUsingAsTarget = new ArrayCollection();
         $this->groups = new ArrayCollection();
+        $this->quizResults = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -128,7 +144,7 @@ class Language
         return $this;
     }
 
-    public function isActive(): ?bool
+    public function getisActive(): ?bool
     {
         return $this->isActive;
     }
@@ -187,6 +203,35 @@ class Language
         if ($this->themeTranslations->removeElement($themeTranslation)) {
             if ($themeTranslation->getLanguage() === $this) {
                 $themeTranslation->setLanguage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @var Collection<int, PhraseTranslation>
+     */
+    public function getPhraseTranslations(): Collection
+    {
+        return $this->phraseTranslations;
+    }
+
+    public function addPhraseTranslation(PhraseTranslation $phraseTranslation): static
+    {
+        if (!$this->phraseTranslations->contains($phraseTranslation)) {
+            $this->phraseTranslations->add($phraseTranslation);
+            $phraseTranslation->setLanguage($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhraseTranslation(PhraseTranslation $phraseTranslation): static
+    {
+        if ($this->phraseTranslations->removeElement($phraseTranslation)) {
+            if ($phraseTranslation->getLanguage() === $this) {
+                $phraseTranslation->setLanguage(null);
             }
         }
 
@@ -274,6 +319,36 @@ class Language
         if ($this->groups->removeElement($group)) {
             if ($group->getTargetLanguage() === $this) {
                 $group->setTargetLanguage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, QuizResult>
+     */
+    public function getQuizResults(): Collection
+    {
+        return $this->quizResults;
+    }
+
+    public function addQuizResult(QuizResult $quizResult): static
+    {
+        if (!$this->quizResults->contains($quizResult)) {
+            $this->quizResults->add($quizResult);
+            $quizResult->setLanguage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuizResult(QuizResult $quizResult): static
+    {
+        if ($this->quizResults->removeElement($quizResult)) {
+            // set the owning side to null (unless already changed)
+            if ($quizResult->getLanguage() === $this) {
+                $quizResult->setLanguage(null);
             }
         }
 

@@ -9,6 +9,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\{Post, Get, Put, Patch, Delete, GetCollection};
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ApiResource(
     operations: [
@@ -26,6 +28,7 @@ class Theme
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['theme_translation:read'])] 
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
@@ -34,6 +37,7 @@ class Theme
         max: 50,
         maxMessage: "The code must not exceed {{ limit }} characters."
     )]
+    #[Groups(['theme_translation:read', 'phrase:read'])] 
     private ?string $code = null;
 
     #[ORM\Column]
@@ -51,11 +55,18 @@ class Theme
     #[ORM\OneToMany(targetEntity: Phrase::class, mappedBy: 'theme')]
     private Collection $phrases;
 
+    /**
+     * @var Collection<int, QuizResult>
+     */
+    #[ORM\OneToMany(targetEntity: QuizResult::class, mappedBy: 'theme')]
+    private Collection $quizResults;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->themeTranslations = new ArrayCollection();
         $this->phrases = new ArrayCollection();
+        $this->quizResults = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -141,6 +152,36 @@ class Theme
             // set the owning side to null (unless already changed)
             if ($phrase->getTheme() === $this) {
                 $phrase->setTheme(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, QuizResult>
+     */
+    public function getQuizResults(): Collection
+    {
+        return $this->quizResults;
+    }
+
+    public function addQuizResult(QuizResult $quizResult): static
+    {
+        if (!$this->quizResults->contains($quizResult)) {
+            $this->quizResults->add($quizResult);
+            $quizResult->setTheme($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuizResult(QuizResult $quizResult): static
+    {
+        if ($this->quizResults->removeElement($quizResult)) {
+            // set the owning side to null (unless already changed)
+            if ($quizResult->getTheme() === $this) {
+                $quizResult->setTheme(null);
             }
         }
 

@@ -16,10 +16,6 @@ use App\Controller\GroupThemesProgressController;
 use App\Controller\GroupThemeMembersProgressController;
 
 
-
-
-
-
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
 #[ApiResource(
