@@ -58,13 +58,13 @@ class Group
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['group:read', 'group:write'])]
+    #[Groups(['group:read', 'group:write', 'group_membership:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
-    #[Groups(['group:read', 'group:write'])]
+    #[Groups(['group:read', 'group:write', 'group_membership:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 100, unique: true)]
