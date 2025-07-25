@@ -17,7 +17,7 @@ class GroupThemeMembersProgressController
         private Security $security
     ) {}
 
-    public function __invoke(int $groupId, int $themeId): JsonResponse
+                public function __invoke(int $groupId, int $themeId): JsonResponse
     {
         $user = $this->security->getUser();
 

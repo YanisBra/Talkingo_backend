@@ -44,6 +44,10 @@ class GroupMembership
     #[Groups(['group_membership:read', 'group_membership:write'])]
     private ?Group $targetGroup = null;
 
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['group_membership:read', 'group_membership:write'])]
+    private bool $isAdmin = false;
+
     #[ORM\Column]
     #[Groups(['group_membership:read'])]
     private ?\DateTimeImmutable $joinedAt = null;
@@ -74,6 +78,17 @@ class GroupMembership
     {
         $this->targetGroup = $targetGroup;
 
+        return $this;
+    }
+
+    public function isIsAdmin(): bool
+    {
+        return $this->isAdmin;
+    }
+
+    public function setIsAdmin(bool $isAdmin): static
+    {
+        $this->isAdmin = $isAdmin;
         return $this;
     }
 

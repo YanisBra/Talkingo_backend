@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Group;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\GroupMembership;
 use Symfony\Bundle\SecurityBundle\Security;
 
 
@@ -31,10 +32,11 @@ class GroupDataPersister implements ProcessorInterface
                     $data->setCreatedBy($currentUser);
 
                     // Automatically add the creator as a member of the group
-                    $membership = new \App\Entity\GroupMembership();
+                    $membership = new GroupMembership();
                     $membership->setUser($currentUser);
                     $membership->setTargetGroup($data);
                     $membership->setJoinedAt(new \DateTimeImmutable());
+                    $membership->setIsAdmin(true);
                     $this->em->persist($membership);
                 }
             }
