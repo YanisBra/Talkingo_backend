@@ -63,7 +63,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         maxMessage: "Name cannot be longer than {{ limit }} characters."
     )]
     #[ORM\Column(length: 50)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'group_membership:read'])]
     private ?string $name = null;
 
     #[ORM\Column(type: 'json')]

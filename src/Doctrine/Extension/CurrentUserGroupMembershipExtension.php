@@ -26,8 +26,11 @@ class CurrentUserGroupMembershipExtension implements QueryCollectionExtensionInt
 
         $alias = $qb->getRootAliases()[0];
 
+        // Join the target group to filter memberships of groups the user is part of
         $qb
-            ->andWhere("$alias.user = :currentUser")
+            ->join("$alias.targetGroup", "g")
+            ->join("g.groupMemberships", "gm_user")
+            ->andWhere("gm_user.user = :currentUser")
             ->setParameter('currentUser', $user);
     }
 

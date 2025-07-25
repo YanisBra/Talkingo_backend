@@ -78,7 +78,7 @@ class GroupDataPersister implements ProcessorInterface
     private function generateUniqueInvitationCode(): string
     {
         do {
-            $code = $this->generateReadableCode(6);
+            $code = $this->generateReadableCode(8);
             $existing = $this->em->getRepository(Group::class)->findOneBy(['invitationCode' => $code]);
         } while ($existing !== null);
 

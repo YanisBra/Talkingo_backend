@@ -45,7 +45,7 @@ class GroupMembership
     private ?Group $targetGroup = null;
 
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['group_membership:read', 'group_membership:write'])]
+    #[Groups(['group_membership:read'])]
     private bool $isAdmin = false;
 
     #[ORM\Column]

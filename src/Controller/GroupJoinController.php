@@ -9,12 +9,16 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class GroupJoinController
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private Security $security
+        private Security $security,
+        private RateLimiterFactory $joinGroupLimiter,
+
     ) {}
 
     #[Route('/api/groups/join', name: 'group_join', methods: ['POST'])]
@@ -23,6 +27,11 @@ class GroupJoinController
         $user = $this->security->getUser();
         $data = json_decode($request->getContent(), true);
         $code = $data['invitationCode'] ?? null;
+        $limiter = $this->joinGroupLimiter->create($request->getClientIp());
+
+        if (!$limiter->consume(1)->isAccepted()) {
+            throw new TooManyRequestsHttpException(null, "Too many attempts to join a group. Please try again later.");
+        }
 
         if (!$code) {
             return new JsonResponse(['error' => 'Invitation code is required'], 400);

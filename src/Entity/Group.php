@@ -68,7 +68,7 @@ class Group
     private ?string $name = null;
 
     #[ORM\Column(length: 100, unique: true)]
-    #[Assert\Length(max: 100)]
+    #[Assert\Length(min:8, max: 100)]
     #[Groups(['group:read', 'group:write'])]
     private ?string $invitationCode = null;
 
