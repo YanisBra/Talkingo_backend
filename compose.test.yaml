@@ -1,0 +1,32 @@
+services:
+    database:
+        image: 'mysql'
+        container_name: talkingo_mysql_container
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: talkingo_db_test
+        ports:
+            - '3306:3306'
+        volumes:
+            - 'mysql_data_test:/var/lib/mysql'
+        networks:
+            - symfony-talkingo-network
+    backend:    
+        build: .
+        container_name: talkingo_backend_container
+        ports:
+            - '8082:80'
+        networks:
+            - symfony-talkingo-network
+        depends_on:
+            - database
+        # If migrations must be run automatically, consider using entrypoint or command here
+        # command: ["sh", "-c", "php bin/console doctrine:database:create && php bin/console doctrine:migration:migrate && apache2-foreground"]
+
+volumes:
+    mysql_data_test:
+
+networks:
+    symfony-talkingo-network:
+        driver: bridge
+

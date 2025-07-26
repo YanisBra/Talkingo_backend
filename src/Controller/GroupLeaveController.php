@@ -31,7 +31,22 @@ class GroupLeaveController
         }
 
         if ($data->getCreatedBy() === $user) {
-            throw new AccessDeniedHttpException("The group creator cannot leave the group.");
+            // Check if the user is the only member
+            $memberships = $this->em->getRepository(GroupMembership::class)->findBy([
+                'targetGroup' => $data,
+            ]);
+
+            if (count($memberships) === 1) {
+                // Remove both the membership and the group
+                $this->em->remove($membership);
+                $this->em->remove($data);
+                $this->em->flush();
+
+                return new JsonResponse(['message' => 'You left and deleted the group (only member).']);
+            }
+
+            // Otherwise: user is the creator but not alone → forbidden
+            throw new AccessDeniedHttpException("The group creator cannot leave the group while others are still members.");
         }
 
         $this->em->remove($membership);

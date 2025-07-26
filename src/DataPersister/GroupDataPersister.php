@@ -41,9 +41,10 @@ class GroupDataPersister implements ProcessorInterface
                 }
             }
 
+            // Assign user's target language as group target language if not already set
             if (null === $data->getTargetLanguage()) {
                 $currentUser = $this->security->getUser();
-                if ($currentUser) {
+                if ($currentUser && $currentUser->getTargetLanguage()) {
                     $data->setTargetLanguage($currentUser->getTargetLanguage());
                 }
             }
