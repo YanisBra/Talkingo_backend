@@ -10,6 +10,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use App\Entity\UserPhraseProgress;
 
 
+// Filter user phrase progress entries to show only those that belong to the current authenticated user.
 class CurrentUserPhraseProgressExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
     public function __construct(private Security $security)

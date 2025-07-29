@@ -42,11 +42,11 @@ class Language
     #[Groups(['language:read', 'language:write'])]
     private ?string $code = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, unique: true,)]
     #[Assert\NotBlank(message: "The language label is required.")]
     #[Assert\Length(
         max: 100,
-        maxMessage: "The label must not exceed {{ limit }} characters."
+        maxMessage: "The label must not exceed {{ limit }} characters.",
     )]
     #[Groups(['language:read', 'language:write', 'theme_translation:read', 'phrase_translation:read', 'group:read', 'user:read'])]
     private ?string $label = null;
@@ -127,7 +127,7 @@ class Language
 
     public function setCode(string $code): static
     {
-        $this->code = $code;
+        $this->code = trim(strip_tags($code));;
 
         return $this;
     }
@@ -139,7 +139,7 @@ class Language
 
     public function setLabel(string $label): static
     {
-        $this->label = $label;
+        $this->label = trim(strip_tags($label));;
 
         return $this;
     }
@@ -163,7 +163,7 @@ class Language
 
     public function setIconUrl(?string $iconUrl): static
     {
-        $this->iconUrl = $iconUrl;
+        $this->iconUrl = trim(strip_tags($iconUrl));;
 
         return $this;
     }

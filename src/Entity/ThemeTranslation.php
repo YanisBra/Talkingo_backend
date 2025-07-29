@@ -39,7 +39,7 @@ class ThemeTranslation
     #[Assert\NotBlank(message: "Label is required.")]
     #[Assert\Length(
         max: 100,
-        maxMessage: "Label cannot be longer than {{ limit }} characters."
+        maxMessage: "Label cannot be longer than {{ limit }} characters.",
     )]
     #[Groups(['theme_translation:read'])]
     private ?string $label = null;
@@ -66,7 +66,7 @@ class ThemeTranslation
 
     public function setLabel(string $label): static
     {
-        $this->label = $label;
+        $this->label = trim(strip_tags($label));;
 
         return $this;
     }

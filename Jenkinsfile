@@ -8,9 +8,7 @@ pipeline {
         stage('Continuous Integration') {
             steps {
                 git branch: 'main', url: 'https://github.com/YanisBra/MyBank_backend.git'
-                sh 'composer install --no-scripts'
-                sh 'php bin/console assets:install public'
-                sh 'php bin/console importmap:install'
+                sh 'php bin/console composer install'
 
                 // Run tests in a Docker container
                 sh 'docker compose -f compose.test.yaml up -d'
@@ -41,7 +39,6 @@ pipeline {
                     sleep 10 &&\
                     docker exec talkingo_backend_container php bin/console doctrine:migrations:migrate --no-interaction &&\
                     docker exec talkingo_backend_container php bin/console lexik:jwt:generate-keypair &&\
-                    docker exec talkingo_backend_container php bin/console cache:clear"
                 '''
             }
         }

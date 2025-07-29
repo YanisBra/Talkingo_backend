@@ -31,11 +31,11 @@ class Theme
     #[Groups(['theme_translation:read'])] 
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, unique: true)]
     #[Assert\NotBlank(message: "The code cannot be blank.")]
     #[Assert\Length(
         max: 50,
-        maxMessage: "The code must not exceed {{ limit }} characters."
+        maxMessage: "The code must not exceed {{ limit }} characters.",
     )]
     #[Groups(['theme_translation:read', 'phrase:read'])] 
     private ?string $code = null;
@@ -81,7 +81,7 @@ class Theme
 
     public function setCode(string $code): static
     {
-        $this->code = $code;
+        $this->code = trim(strip_tags($code));;
 
         return $this;
     }

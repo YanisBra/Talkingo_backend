@@ -37,7 +37,7 @@ class Phrase
         max: 150,
         maxMessage: "The phrase code cannot be longer than {{ limit }} characters."
     )]
-    #[ORM\Column(length: 150)]
+    #[ORM\Column(length: 150, unique: true)]
     #[Groups(['phrase:read', 'phrase_translation:read'])]
     private ?string $code = null;
 
@@ -75,7 +75,7 @@ class Phrase
 
     public function setCode(string $code): static
     {
-        $this->code = $code;
+        $this->code = trim(strip_tags($code));;
 
         return $this;
     }

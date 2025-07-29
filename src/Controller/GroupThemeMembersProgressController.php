@@ -10,24 +10,27 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+// Controller for returning individual progress of each group member for a given theme.
 class GroupThemeMembersProgressController
 {
+    // Constructor injecting security and database access.
     public function __construct(
         private EntityManagerInterface $em,
         private Security $security
     ) {}
 
-                public function __invoke(int $groupId, int $themeId): JsonResponse
+    public function __invoke(int $groupId, int $themeId): JsonResponse
     {
+        // Get the currently authenticated user.
         $user = $this->security->getUser();
 
-        // 1. Check if the group exists
+        //  Check if the group exists by ID.
         $group = $this->em->getRepository(Group::class)->find($groupId);
         if (!$group) {
             throw new NotFoundHttpException("Group not found.");
         }
 
-        // 2. Check if the current user is a member of the group
+        // Ensure the user is a member of the group.
         $membership = $this->em->getRepository(GroupMembership::class)->findOneBy([
             'user' => $user,
             'targetGroup' => $group
@@ -36,10 +39,10 @@ class GroupThemeMembersProgressController
             throw new AccessDeniedHttpException("You are not a member of this group.");
         }
 
-        // 3. Get the group's target language
+        // Get the ID of the target language used by the group.
         $targetLanguageId = $group->getTargetLanguage()?->getId();
 
-        // 4. Retrieve total number of phrases in the theme
+        // Count the number of phrases linked to the given theme.
         $sqlTotal = "
             SELECT COUNT(p.id) as total_phrases
             FROM phrase p
@@ -50,11 +53,12 @@ class GroupThemeMembersProgressController
             ['themeId' => $themeId]
         )->fetchOne();
 
+        // If no phrases found, return empty result.
         if ($total === 0) {
             return new JsonResponse([], 200);
         }
 
-        // 5. Compute individual progress for each group member
+        // Compute how many phrases each member has learned in the group for this theme.
         $sql = "
             SELECT u.id as user_id, u.name, 
                    COUNT(DISTINCT CASE WHEN pt.language_id = :langId AND p.theme_id = :themeId THEN upp.id END) as learned
@@ -67,12 +71,13 @@ class GroupThemeMembersProgressController
             GROUP BY u.id, u.name
         ";
 
+        // Execute the progress query.
         $rows = $this->em->getConnection()->executeQuery(
             $sql,
             ['groupId' => $groupId, 'themeId' => $themeId, 'langId' => $targetLanguageId]
         )->fetchAllAssociative();
 
-        // 6. Format the results
+        // Format the data to include user info and percentage learned.
         $result = array_map(fn ($row) => [
             'user' => [
                 'id' => (int) $row['user_id'],
@@ -81,6 +86,7 @@ class GroupThemeMembersProgressController
             'progress' => round(($row['learned'] / $total) * 100)
         ], $rows);
 
+        // Return the formatted progress data.
         return new JsonResponse($result);
     }
 }

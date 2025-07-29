@@ -43,7 +43,7 @@ class PhraseTranslation
         min: 2,
         max: 500,
         minMessage: "The phrase translation must be at least {{ limit }} characters long.",
-        maxMessage: "The phrase translation cannot be longer than {{ limit }} characters."
+        maxMessage: "The phrase translation cannot be longer than {{ limit }} characters.",
     )]
     #[Groups(['phrase_translation:read'])]
     private ?string $text = null;
@@ -81,7 +81,7 @@ class PhraseTranslation
 
     public function setText(string $text): static
     {
-        $this->text = $text;
+        $this->text = trim(strip_tags($text));;
 
         return $this;
     }

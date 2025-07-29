@@ -9,6 +9,7 @@ use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Entity\GroupMembership;
 
+// Filters GroupMembership entities based on the current authenticated user
 class CurrentUserGroupMembershipExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
     public function __construct(private Security $security) {}

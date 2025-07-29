@@ -113,7 +113,7 @@ class Group
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        $this->name = trim(strip_tags($name));
 
         return $this;
     }
@@ -125,7 +125,7 @@ class Group
 
     public function setInvitationCode(string $invitationCode): static
     {
-        $this->invitationCode = $invitationCode;
+        $this->invitationCode = trim(strip_tags($invitationCode));
 
         return $this;
     }

@@ -34,12 +34,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'group_membership:read'])]
     private ?int $id = null;
 
     #[Assert\NotBlank(message: "Email is required.")]
     #[Assert\Email(message: "The email '{{ value }}' is not valid.")]
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, unique: true)]
     #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
@@ -132,7 +132,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setEmail(string $email): static
     {
-        $this->email = $email;
+        $this->email = trim(strip_tags($email));
 
         return $this;
     }
@@ -156,7 +156,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setPlainPassword(?string $plainPassword): static
     {
-        $this->plainPassword = $plainPassword;
+        $this->plainPassword = trim(strip_tags($plainPassword));;
 
         return $this;
     }
@@ -168,7 +168,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        $this->name = trim(strip_tags($name));
 
         return $this;
     }

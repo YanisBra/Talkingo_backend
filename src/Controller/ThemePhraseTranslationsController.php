@@ -12,22 +12,34 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
+// Controller to return all phrase translations for a given theme
+// Includes both interface and target language texts, and user learning progress
 class ThemePhraseTranslationsController extends AbstractController
 {
+    // Injects EntityManager and Security service for DB access and user context
     public function __construct(
         private EntityManagerInterface $em,
         private Security $security
     ) {}
 
+    // Route: GET /api/themes/{id}/phrases/translated
+    // Returns phrases of a theme with translations in interface and target language,
+    // along with 'is_known' status based on user progress
     #[Route('/api/themes/{id}/phrases/translated', name: 'theme_phrases_translated', methods: ['GET'])]
     public function __invoke(int $id): JsonResponse
     {
+        // Get the current authenticated user and their language preferences
         $user = $this->security->getUser();
         $interfaceLangId = $user->getInterfaceLanguage()->getId();
         $targetLangId = $user->getTargetLanguage()->getId();
 
+        // Use raw SQL for complex join logic and performance
         $conn = $this->em->getConnection();
 
+        // SQL to retrieve:
+        // - theme labels in interface and target languages
+        // - phrase ID and translations
+        // - user's progress (is_known) for each phrase
         $sql = "
             SELECT 
                 ttt.label as theme_translations_target,
@@ -55,6 +67,7 @@ class ThemePhraseTranslationsController extends AbstractController
             'themeId' => $id,
         ])->fetchAllAssociative();
 
+        // Return the formatted result as JSON response
         return new JsonResponse($result);
     }
 }
