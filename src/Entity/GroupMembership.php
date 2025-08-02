@@ -38,6 +38,7 @@ class GroupMembership
 
     #[ORM\ManyToOne(inversedBy: 'groupMemberships')]
     #[Groups(['group_membership:read', 'group_membership:write'])]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'groupMemberships')]

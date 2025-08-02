@@ -40,7 +40,7 @@ class UserPhraseProgress
 
     #[Assert\NotNull(message: "The user is required.")]
     #[ORM\ManyToOne(inversedBy: 'userPhraseProgress')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     #[Groups(['user_phrase_progress:read', 'user_phrase_progress:write'])]
     private ?User $user = null;
 

@@ -28,14 +28,9 @@ class UserDataPersister implements ProcessorInterface
 
         // Prevents non-admins from changing roles
         if (!$this->security->isGranted('ROLE_ADMIN')) {
-            // retrieves the original object if it exists
-            $originalData = $context['previous_data'] ?? null;
-
-            if ($originalData instanceof User) {
-                // crushes the attempt at change
-                $data->setRoles($originalData->getRoles()); 
-            }
-        }
+        // Always enforce default roles if not admin
+        $data->setRoles(['ROLE_USER']);
+}
 
     if ($data->getPlainPassword()) {
         $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPlainPassword());

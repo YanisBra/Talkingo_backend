@@ -89,7 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, UserPhraseProgress>
      */
-    #[ORM\OneToMany(targetEntity: UserPhraseProgress::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: UserPhraseProgress::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
     private Collection $userPhraseProgress;
 
     /**
@@ -101,7 +101,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, GroupMembership>
      */
-    #[ORM\OneToMany(targetEntity: GroupMembership::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: GroupMembership::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
     private Collection $groupMemberships;
 
     /**

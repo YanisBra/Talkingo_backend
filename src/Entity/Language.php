@@ -39,7 +39,7 @@ class Language
         max: 10,
         maxMessage: "The code must not exceed {{ limit }} characters."
     )]
-    #[Groups(['language:read', 'language:write'])]
+    #[Groups(['language:read', 'language:write', 'user:read'])]
     private ?string $code = null;
 
     #[ORM\Column(length: 100, unique: true,)]

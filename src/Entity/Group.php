@@ -22,8 +22,8 @@ use App\Controller\GroupThemeMembersProgressController;
     normalizationContext: ['groups' => ['group:read']],
     denormalizationContext: ['groups' => ['group:write']],
     operations: [
-        new GetCollection(security: "is_granted('IS_AUTHENTICATED_FULLY')"),
-        new Get(security: "is_granted('IS_AUTHENTICATED_FULLY')"),
+        new GetCollection(security: "is_granted('ROLE_USER')"),
+        new Get(security: "is_granted('ROLE_USER')"),
         new Post(security: "is_granted('ROLE_USER')", processor: GroupDataPersister::class), 
         new Put(security: "object.getCreatedBy() === user or is_granted('ROLE_ADMIN')", processor: GroupDataPersister::class),
         new Patch(security: "object.getCreatedBy() === user or is_granted('ROLE_ADMIN')", processor: GroupDataPersister::class),

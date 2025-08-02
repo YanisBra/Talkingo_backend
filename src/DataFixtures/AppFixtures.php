@@ -9,7 +9,8 @@ use App\Entity\ThemeTranslation;
 use App\Entity\Phrase;
 use App\Entity\PhraseTranslation;
 use App\Entity\UserPhraseProgress;
-
+use App\Entity\Group;
+use App\Entity\GroupMembership;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -37,31 +38,49 @@ class AppFixtures extends Fixture
         $manager->persist($language3);
 
         //Users
+        $user = new User();
+        $user  ->setEmail('admin@admin.com')
+                ->setName('admin')
+                ->setRoles(['ROLE_ADMIN'])
+                ->setInterfaceLanguage($language1)
+                ->setTargetLanguage($language2)
+                ->setPassword($this->passwordHasher->hashPassword($user, 'pass123'));
+
         $user1 = new User();
-        $user1  ->setEmail('user@user.fr')
+        $user1  ->setEmail('user@user.com')
                 ->setName('user')
                 ->setInterfaceLanguage($language1)
                 ->setTargetLanguage($language2)
                 ->setPassword($this->passwordHasher->hashPassword($user1, 'pass123'));
 
         $user2= new User();
-        $user2  ->setEmail('user2@user.fr')
+        $user2  ->setEmail('user2@user.com')
                 ->setName('user2')
                 ->setInterfaceLanguage($language2)
                 ->setTargetLanguage($language3)
                 ->setPassword($this->passwordHasher->hashPassword($user2, 'pass123'));
 
-        $user3 = new User();
-        $user3  ->setEmail('admin@admin.fr')
-                ->setName('admin')
-                ->setRoles(['ROLE_ADMIN'])
-                ->setInterfaceLanguage($language1)
-                ->setTargetLanguage($language2)
+        $user3= new User();
+        $user3  ->setEmail('user3@user.com')
+                ->setName('user3')
+                ->setInterfaceLanguage($language2)
+                ->setTargetLanguage($language3)
                 ->setPassword($this->passwordHasher->hashPassword($user3, 'pass123'));
 
+        
+        $user4= new User();
+        $user4  ->setEmail('user4@user.com')
+                ->setName('user4')
+                ->setInterfaceLanguage($language2)
+                ->setTargetLanguage($language3)
+                ->setPassword($this->passwordHasher->hashPassword($user4, 'pass123'));
+
+        $manager->persist($user);
         $manager->persist($user1);
         $manager->persist($user2);
         $manager->persist($user3);
+        $manager->persist($user4);
+
 
 
         //Themes
@@ -202,10 +221,65 @@ class AppFixtures extends Fixture
         $userPhraseProgress4->setUser($user2)
                             ->setPhraseTranslation($phrase_translation9);
 
+        $userPhraseProgress5 = new UserPhraseProgress();
+        $userPhraseProgress5->setUser($user3)
+                            ->setPhraseTranslation($phrase_translation3);
+
+        $userPhraseProgress6 = new UserPhraseProgress();
+        $userPhraseProgress6->setUser($user3)
+                            ->setPhraseTranslation($phrase_translation9);
+
+        $userPhraseProgress7 = new UserPhraseProgress();
+        $userPhraseProgress7->setUser($user4)
+                            ->setPhraseTranslation($phrase_translation9);
+
         $manager->persist($userPhraseProgress1);
         $manager->persist($userPhraseProgress2);
         $manager->persist($userPhraseProgress3);
         $manager->persist($userPhraseProgress4);
+        $manager->persist($userPhraseProgress5);
+        $manager->persist($userPhraseProgress6);
+        $manager->persist($userPhraseProgress7);
+
+        // Create a group
+        $group2 = new Group();
+        $group2->setName('Group 2');
+        $group2->setCreatedBy($user2);
+        $group2->setTargetLanguage($language3);
+        $group2->setInvitationCode('GROUP1234');
+
+        $group1 = new Group();
+        $group1->setName('Group 1');
+        $group1->setCreatedBy($user1);
+        $group1->setTargetLanguage($language2);
+        $group1->setInvitationCode('GROUP2345');
+
+        $manager->persist($group1);
+        $manager->persist($group2);
+
+        // Create a group membership
+
+        $membership1 = new GroupMembership();
+        $membership1->setUser($user1);
+        $membership1->setTargetGroup($group1);
+        $membership1->setJoinedAt(new \DateTimeImmutable());
+        $membership1->setIsAdmin(true);
+
+        $membership2 = new GroupMembership();
+        $membership2->setUser($user2);
+        $membership2->setTargetGroup($group2);
+        $membership2->setJoinedAt(new \DateTimeImmutable());
+        $membership2->setIsAdmin(true);
+
+        $membership3 = new GroupMembership();
+        $membership3->setUser($user4);
+        $membership3->setTargetGroup($group2);
+        $membership3->setJoinedAt(new \DateTimeImmutable());
+        $membership3->setIsAdmin(true);
+
+        $manager->persist($membership1);
+        $manager->persist($membership2);
+        $manager->persist($membership3);
 
         $manager->flush();
     }
