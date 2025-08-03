@@ -61,7 +61,7 @@ class PhraseTranslation
     /**
      * @var Collection<int, UserPhraseProgress>
      */
-    #[ORM\OneToMany(targetEntity: UserPhraseProgress::class, mappedBy: 'phraseTranslation')]
+    #[ORM\OneToMany(targetEntity: UserPhraseProgress::class, mappedBy: 'phraseTranslation', cascade: ['remove'], orphanRemoval: true)]
     private Collection $userPhraseProgress;
 
     public function __construct()

@@ -46,13 +46,13 @@ class Theme
     /**
      * @var Collection<int, ThemeTranslation>
      */
-    #[ORM\OneToMany(targetEntity: ThemeTranslation::class, mappedBy: 'theme')]
+    #[ORM\OneToMany(targetEntity: ThemeTranslation::class, mappedBy: 'theme', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $themeTranslations;
 
     /**
      * @var Collection<int, Phrase>
      */
-    #[ORM\OneToMany(targetEntity: Phrase::class, mappedBy: 'theme')]
+    #[ORM\OneToMany(targetEntity: Phrase::class, mappedBy: 'theme', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $phrases;
 
     /**

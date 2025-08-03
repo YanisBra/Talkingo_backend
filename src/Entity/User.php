@@ -95,7 +95,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Group>
      */
-    #[ORM\OneToMany(targetEntity: Group::class, mappedBy: 'createdBy')]
+    #[ORM\OneToMany(targetEntity: Group::class, mappedBy: 'createdBy', cascade: ['remove'], orphanRemoval: true)]
     private Collection $groups;
 
     /**
@@ -107,7 +107,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, QuizResult>
      */
-    #[ORM\OneToMany(targetEntity: QuizResult::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: QuizResult::class, mappedBy: 'user', cascade: ['remove'], orphanRemoval: true)]
     private Collection $quizResults;
 
     public function __construct()

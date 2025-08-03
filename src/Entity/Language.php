@@ -71,19 +71,19 @@ class Language
     /**
      * @var Collection<int, ThemeTranslation>
      */
-    #[ORM\OneToMany(targetEntity: ThemeTranslation::class, mappedBy: 'language')]
+    #[ORM\OneToMany(targetEntity: ThemeTranslation::class, mappedBy: 'language', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $themeTranslations;
 
     /**
      * @var Collection<int, PhraseTranslation>
      */
-    #[ORM\OneToMany(mappedBy: 'language', targetEntity: PhraseTranslation::class)]
+    #[ORM\OneToMany(mappedBy: 'language', targetEntity: PhraseTranslation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $phraseTranslations;
 
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'interfaceLanguage')]
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'interfaceLanguage', )]
     private Collection $usersUsingAsInterface;
 
     /**

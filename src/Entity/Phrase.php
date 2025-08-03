@@ -54,7 +54,7 @@ class Phrase
     /**
      * @var Collection<int, PhraseTranslation>
      */
-    #[ORM\OneToMany(targetEntity: PhraseTranslation::class, mappedBy: 'phrase')]
+    #[ORM\OneToMany(targetEntity: PhraseTranslation::class, mappedBy: 'phrase', cascade: ['remove'], orphanRemoval: true)]
     private Collection $phraseTranslations;
 
     public function __construct()
