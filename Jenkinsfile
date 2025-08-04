@@ -33,7 +33,7 @@ pipeline {
             steps{
                 sh '''
                     sshpass -p ${SERVER_PSW} ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} \
-                    "curl -O https://raw.githubusercontent.com/YanisBra/MyBank_backend/refs/heads/main/compose.prod.yaml &&\
+                    "curl -O https://github.com/YanisBra/Talkingo_backend/blob/main/compose.prod.yaml &&\
                     docker compose -f compose.prod.yaml down || true &&\
                     docker compose -f compose.prod.yaml up -d &&\
                     sleep 10 &&\
