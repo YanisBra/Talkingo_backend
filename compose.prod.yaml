@@ -3,7 +3,7 @@ services:
         image: 'mysql'
         container_name: talkingo_mysql_container
         environment:
-            MYSQL_ROOT_PASSWORD: root
+            MYSQL_ROOT_PASSWORD: talkingopsw
             MYSQL_DATABASE: talkingo_db
         ports:
             - '3306:3306'

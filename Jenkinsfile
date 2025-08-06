@@ -7,12 +7,11 @@ pipeline {
         
         stage('Continuous Integration') {
             steps {
-                git branch: 'main', url: 'https://github.com/YanisBra/MyBank_backend.git'
+                git branch: 'main', url: 'https://github.com/YanisBra/Talkingo_backend.git'
                 sh 'php bin/console composer install'
 
                 // Run tests in a Docker container
                 sh 'docker compose -f compose.test.yaml up -d'
-                sh 'sleep 10'
                 sh 'docker exec talkingo_backend_container php bin/console doctrine:migrations:migrate --env=test --no-interaction'
                 sh 'docker exec talkingo_backend_container php bin/console doctrine:fixtures:load --env=test --no-interaction'
                 sh 'docker exec talkingo_backend_container php bin/console lexik:jwt:generate-keypair --env=test'
@@ -23,7 +22,7 @@ pipeline {
 
         stage('Continuous Delivery') {
             steps {
-                sh "docker build . -t ${DOCKERHUB_USERNAME}/talkingo_backend"
+                sh "docker build --platform linux/amd64 . -t yanisbra/talkingo_backend"
                 sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}" 
                 sh "docker push ${DOCKERHUB_USERNAME}/talkingo_backend"
             }
@@ -33,12 +32,9 @@ pipeline {
             steps{
                 sh '''
                     sshpass -p ${SERVER_PSW} ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} \
-                    "curl -O https://github.com/YanisBra/Talkingo_backend/blob/main/compose.prod.yaml &&\
                     docker compose -f compose.prod.yaml down || true &&\
                     docker compose -f compose.prod.yaml up -d &&\
-                    sleep 10 &&\
                     docker exec talkingo_backend_container php bin/console doctrine:migrations:migrate --no-interaction &&\
-                    docker exec talkingo_backend_container php bin/console lexik:jwt:generate-keypair &&\
                 '''
             }
         }
